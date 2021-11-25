@@ -8,16 +8,12 @@ import {
 } from 'utils/constants/constants'
 import { WETH } from 'utils/constants/tokens'
 import { getProvider } from 'utils/provider'
-
-type KyberBalances = {
-  tokenBalance: BigNumber
-  wethBalance: BigNumber
-}
+import { LiquidityBalance } from './types'
 
 export async function getKyberLiquidity(
   tokenAddress: string
-): Promise<KyberBalances> {
-  let response: KyberBalances = {
+): Promise<LiquidityBalance> {
+  let response = {
     tokenBalance: BigNumber.from(0),
     wethBalance: BigNumber.from(0),
   }
@@ -34,8 +30,8 @@ export async function getKyberLiquidity(
   const pairContract = await new Contract(pools[0], KYBER_POOL_ABI, provider)
   const [tokenBalance, wethBalance] = await pairContract.getReserves()
 
-  response.tokenBalance = tokenBalance.div(TEN_POW_18)
-  response.wethBalance = tokenBalance.div(wethBalance)
-
-  return response
+  return {
+    tokenBalance: tokenBalance.div(TEN_POW_18),
+    wethBalance: wethBalance.div(TEN_POW_18)
+  }
 }

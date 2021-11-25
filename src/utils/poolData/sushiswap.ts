@@ -8,15 +8,11 @@ import {
 
 import { WETH } from 'utils/constants/tokens'
 import { getProvider } from 'utils/provider'
-
-type V2Balances = {
-  tokenBalance: BigNumber
-  wethBalance: BigNumber
-}
+import { LiquidityBalance } from './types'
 
 export async function getSushiswapLiquidity(
   tokenAddress: string
-): Promise<V2Balances> {
+): Promise<LiquidityBalance> {
   const provider = getProvider()
   const factoryInstance = await new Contract(
     SUSHI_FACTORY,
@@ -31,9 +27,8 @@ export async function getSushiswapLiquidity(
   )
   const [tokenBalance, wethBalance] = await pairContract.getReserves()
 
-  const response: V2Balances = {
+  return {
     tokenBalance: tokenBalance.div(TEN_POW_18),
     wethBalance: wethBalance.div(TEN_POW_18),
   }
-  return response
 }

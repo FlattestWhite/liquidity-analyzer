@@ -7,18 +7,14 @@ import {
 } from 'utils/constants/constants'
 import { getProvider } from 'utils/provider'
 import { ERC20_ABI, WETH } from 'utils/constants/tokens'
-
-type BalBalances = {
-  tokenBalance: BigNumber
-  wethBalance: BigNumber
-}
+import { LiquidityBalance } from './types'
 
 // Usage note, targetPriceImpact should be the impact including fees! Balancer pool fees can change and it's not easy to extract from the data
 // we have so put in a number that is net of fees.
 export async function getBalancerV1Liquidity(
   tokenAddress: string
-): Promise<BalBalances> {
-  let response: BalBalances = {
+): Promise<LiquidityBalance> {
+  let response = {
     tokenBalance: BigNumber.from(0),
     wethBalance: BigNumber.from(0),
   }
@@ -41,10 +37,8 @@ export async function getBalancerV1Liquidity(
 
   const reducer = (previousValue: BigNumber, currentValue: BigNumber) =>
     previousValue.add(currentValue)
-  response = {
+  return {
     tokenBalance: tokenBalances.reduce(reducer).div(TEN_POW_18),
     wethBalance: wethBalances.reduce(reducer).div(TEN_POW_18),
   }
-
-  return response
 }
